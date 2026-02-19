@@ -1,5 +1,7 @@
 package modules;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -167,8 +169,35 @@ public class DataRetriever {
 
         return list;
     }
+    public BigDecimal computeWeightedTurnoverTtc() {
 
+        String sql = """
+        SELECT SUM(
+            CASE
+                WHEN i.status='PAID'
+                    THEN il.quantity * il.unit_price * (1 + tc.rate/100)
+                WHEN i.status='CONFIRMED'
+                    THEN il.quantity * il.unit_price * 0.5 * (1 + tc.rate/100)
+                ELSE 0
+            END
+        ) AS weighted_ttc
+        FROM invoice i
+        JOIN invoice_line il ON i.id = il.invoice_id
+        CROSS JOIN tax_config tc
+        """;
 
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
 
+            if (rs.next()) {
+                return rs.getBigDecimal("weighted_ttc").setScale(2, RoundingMode.HALF_UP);
+            }
 
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        return BigDecimal.ZERO;
+    }
 }

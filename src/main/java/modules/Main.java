@@ -1,7 +1,5 @@
 package modules;
 
-import java.sql.SQLOutput;
-
 public class Main {
     public static void main(String[] args) {
         DataRetriever dataRetriever = new DataRetriever();
@@ -11,5 +9,6 @@ public class Main {
         System.out.println(dataRetriever.computeStatusTotals());
         System.out.println(dataRetriever.computeWeightedTurnover());
         dataRetriever.findInvoiceTaxSummaries().forEach(System.out::println);
+        System.out.println(dataRetriever.computeWeightedTurnoverTtc());
     }
 }

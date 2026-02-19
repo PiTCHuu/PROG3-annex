@@ -10,5 +10,6 @@ public class Main {
         dataRetriever.findConfirmedAndPaidInvoiceTotals().forEach(System.out::println);
         System.out.println(dataRetriever.computeStatusTotals());
         System.out.println(dataRetriever.computeWeightedTurnover());
+        dataRetriever.findInvoiceTaxSummaries().forEach(System.out::println);
     }
 }
